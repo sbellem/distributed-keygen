@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  node1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        nodename: node1
+    volumes:
+      - ./lab/pub_certs:/etc/khgdkg/pub_certs
+      - ./lab/ss512.docker.contlist:/etc/khgdkg/contlist
+      - ./lab/node1/pub.pem:/etc/khgdkg/pub.pem
+      - ./lab/node1/priv.pem:/etc/khgdkg/priv.pem
+    ports:
+      - 9900
+    working_dir: /etc/khgdkg
+    command: node 9900 pub.pem priv.pem contlist 0 0 0&
+  node2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        nodename: node2
+    volumes:
+      - ./lab/pub_certs:/etc/khgdkg/pub_certs
+      - ./lab/ss512.docker.contlist:/etc/khgdkg/contlist
+      - ./lab/node2/pub.pem:/etc/khgdkg/pub.pem
+      - ./lab/node2/priv.pem:/etc/khgdkg/priv.pem
+    ports:
+      - 9900
+    working_dir: /etc/khgdkg
+    command: node 9900 pub.pem priv.pem contlist 0 0 0&
+  node3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        nodename: node3
+    volumes:
+      - ./lab/pub_certs:/etc/khgdkg/pub_certs
+      - ./lab/ss512.docker.contlist:/etc/khgdkg/contlist
+      - ./lab/node3/pub.pem:/etc/khgdkg/pub.pem
+      - ./lab/node3/priv.pem:/etc/khgdkg/priv.pem
+    ports:
+      - 9900
+    working_dir: /etc/khgdkg
+    command: node 9900 pub.pem priv.pem contlist 0 0 0&
+  node4:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        nodename: node4
+    volumes:
+      - ./lab/pub_certs:/etc/khgdkg/pub_certs
+      - ./lab/ss512.docker.contlist:/etc/khgdkg/contlist
+      - ./lab/node4/pub.pem:/etc/khgdkg/pub.pem
+      - ./lab/node4/priv.pem:/etc/khgdkg/priv.pem
+    ports:
+      - 9900
+    working_dir: /etc/khgdkg
+    command: node 9900 pub.pem priv.pem contlist 0 0 0&

@@ -1,0 +1,4 @@
+1 node1 9900 pub_certs/1.pem
+2 node2 9900 pub_certs/2.pem
+3 node3 9900 pub_certs/3.pem
+4 node4 9900 pub_certs/4.pem
