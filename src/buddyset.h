@@ -33,8 +33,8 @@
 using namespace std;
 
 struct ContactEntry {
-    in_addr_t addr;
-    in_port_t port;
+    string host;
+    string port;
 };
 
 class BuddySet {

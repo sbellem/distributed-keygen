@@ -16,9 +16,10 @@
 //  MA 02110-1301 USA
 
 
-
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <netdb.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -129,19 +130,23 @@ void BuddySet::init_contact_list(const char *filename)
 		getline(file, nextline);
 		if (file.eof()) break;
 		// Parse each line of the file
-		// Format: id <space> i.p.ad.dr <space> port <space>[L]
-		int id, a1, a2, a3, a4, port;
+		// Format: id <space> host <space> port <space>[L]
+		// "host" can be a host name or an ip address
+		int id;
+		string host, port;
 		char leader_char;
 		char certfilename[200];
-		int res = sscanf(nextline.data(), "%d %d.%d.%d.%d %d %s %c",&id, &a1, &a2, &a3, &a4, &port, certfilename, &leader_char);
-		if ((res == 8)&& (leader_char == 'L')) {isleader = true; leader = id;}
-		if (res < 7) {
-	    	cerr << "Bad scanned line: " << nextline << "\n";
-	    	continue;
+		stringstream node_data(nextline);
+		node_data >> id >> host >> port >> certfilename >> leader_char;
+		if (leader_char == 'L') {
+		    isleader = true;
+		    leader = id;
 		}
+		// TODO: handle missing node data
+
 		//Add contact Entry
 		ContactEntry ce;
-		ce.addr = (a1 << 24) + (a2 << 16) + (a3 << 8) + a4;
+		ce.host = host;
 		ce.port = port;
 		contactlist[id] = ce;
 		

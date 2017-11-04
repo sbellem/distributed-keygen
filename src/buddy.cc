@@ -17,6 +17,7 @@
 
 
 
+#include <netdb.h>
 #include <pthread.h>
 #include <iomanip>
 #include <iostream>
@@ -263,20 +264,34 @@ void Buddy::writer_thread(void) {
 			map<BuddyID, ContactEntry>::const_iterator citer = contactlist.find(id);
 
 			if (citer != contactlist.end()) {
-				fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-				sockaddr_in sin;
-				sin.sin_family = AF_INET;
-				sin.sin_port = htons(citer->second.port);
-				sin.sin_addr.s_addr = htonl(citer->second.addr);
-				// cout << "Connecting for id " << id << endl;
-				int res = connect(fd, (sockaddr *)&sin, sizeof(sin));
-				if (res < 0) {
+				int addr_info_res;
+				struct addrinfo *result, *rp;
+				addr_info_res = getaddrinfo(citer->second.host.c_str(), citer->second.port.c_str(), NULL, &result);
+				if (addr_info_res != 0) {
 					// this is original, but is this truely necessary?
-					// cout << "connection failed " << this -> get_id() << endl;
+					cout << "Getting addr info failed for node " << this -> get_id() << endl;
+					buddyset.notify_add_buddy_id(this);
+					return;
+				}
+				for (rp = result; rp != NULL; rp = rp->ai_next) {
+					fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+					if (fd == -1)
+						continue;
+
+					if (connect(fd, rp->ai_addr, rp->ai_addrlen) != -1)
+						break;                  /* Success */
+
+					close(fd);
+				}
+
+				if (rp == NULL) {
+					// this is original, but is this truely necessary?
+					cout << "connection failed for node " << this -> get_id() << endl;
 					buddyset.notify_add_buddy_id(this);
 					close(fd);
 					return;
-				}   
+				}
+				cout << "Connected to node " << id << " host:port " << citer->second.host << ":" << citer->second.port<< endl;
 				send_cert(fd);
 				buddyset.notify_add_buddy_fd(fd, id);
 			} else {
